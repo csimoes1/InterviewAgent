@@ -1,0 +1,28 @@
+InterviewAgent/
+├── app/
+│   ├── __init__.py
+│   ├── main.py              # FastAPI application entry point
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── websocket.py     # WebSocket routes for audio streaming
+│   │   └── api.py           # REST API routes
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── whisper_service.py   # Whisper.cpp integration
+│   │   └── grok_service.py      # Grok API integration
+│   └── models/
+│       ├── __init__.py
+│       └── conversation.py       # Data models
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   ├── app.js           # Main application logic
+│   │   └── webrtc.js        # WebRTC handling
+│   └── index.html           # Main page
+├── tests/
+│   └── test_whisper.py
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+└── README.md

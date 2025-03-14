@@ -1,0 +1,39 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Use alternatives to avoid building whisper.cpp with vectorization issues
+# Option 1: Use a different speech recognition engine
+# Add to requirements.txt: openai-whisper
+# And use the Python library for transcription instead of the C++ version
+
+# Create necessary directories
+RUN mkdir -p /app/models
+
+# Add placeholder for whisper.cpp main executable
+# (We'll work around this in the Python code)
+
+# Copy application code
+COPY . .
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV WHISPER_MODEL_PATH=/app/models
+
+# Expose port
+EXPOSE 8000
+
+# Command to run the application
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
