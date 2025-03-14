@@ -4,7 +4,7 @@ import os
 
 # Get API key from environment variable (recommended for security)
 # XAI_API_KEY = os.getenv("XAI_API_KEY")  # Set this in your environment, e.g., export XAI_API_KEY='your_key_here'
-XAI_API_KEY = "xai-eVoa0lqPpkKXTrLHkahf3g5BYD6uWEOvaZGhSdz5mJxxxTrgOHYmYNefGdoWVDKYPVDwbyzBzmNy5vl8"
+XAI_API_KEY = ""
 if not XAI_API_KEY:
     raise ValueError("Please set the XAI_API_KEY environment variable")
 

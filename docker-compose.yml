@@ -4,7 +4,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - GROK_API_KEY=xai-eVoa0lqPpkKXTrLHkahf3g5BYD6uWEOvaZGhSdz5mJxxxTrgOHYmYNefGdoWVDKYPVDwbyzBzmNy5vl8
+      - GROK_API_KEY=
       - GROK_MODEL=grok-2-latest
       - WHISPER_CPP_PATH=/app/whisper.cpp/build/bin/whisper-cli
     volumes:
