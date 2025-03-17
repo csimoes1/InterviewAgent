@@ -6,6 +6,8 @@ import uuid
 from typing import Dict, List
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
+from app.services.vad import VoiceActivityDetector
 from app.services.whisper_service import WhisperService
 from app.services.grok_service import GrokService
 
@@ -27,15 +29,18 @@ conversation_histories: Dict[str, List[Dict]] = {}
 async def websocket_endpoint(websocket: WebSocket):
     """
     WebSocket endpoint for audio streaming.
-    Receives audio chunks, processes them with whisper.cpp,
+    Receives audio chunks, processes them with VAD detection,
+    transcribes with whisper.cpp when speech ends,
     sends transcription to Grok API, and returns the response.
-    Always sends audio data to whisper service without waiting for silence.
     """
     # Accept the connection
     await websocket.accept()
     connection_id = str(uuid.uuid4())
     websocket_connections[connection_id] = websocket
     conversation_histories[connection_id] = []
+
+    # Initialize VAD detector
+    vad_detector = VoiceActivityDetector()
 
     try:
         logger.info(f"New WebSocket connection established: {connection_id}")
@@ -61,11 +66,13 @@ async def websocket_endpoint(websocket: WebSocket):
                 if message["type"] == "audio":
                     # Decode base64 audio data
                     audio_chunk = base64.b64decode(message["data"])
-                    audio_buffer.extend(audio_chunk)
 
-                    # Process every chunk of audio right away
-                    if len(audio_buffer) > 100000:
-                        logger.info(f"Received audio chunk, sending to whisper len={len(audio_buffer)}")
+                    # Process with VAD (only process the new chunk, not the entire buffer)
+                    speech_ended, speech_frames = vad_detector.process_audio(audio_chunk)
+
+                    # If speech has ended, process it
+                    if speech_ended and speech_frames:
+                        logger.info(f"Speech detected and ended, sending to whisper len={len(speech_frames)}")
 
                         await websocket.send_json({
                             "type": "status",
@@ -73,7 +80,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         })
 
                         # Process audio with Whisper
-                        transcription = await whisper_service.transcribe(bytes(audio_buffer))
+                        transcription = await whisper_service.transcribe(speech_frames)
 
                         if transcription:
                             # Send transcription to client
@@ -94,7 +101,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                 "message": "Getting response from AI..."
                             })
 
-                            # Mock response for testing
+                            # Get response from Grok service
                             grok_response = await grok_service.get_response(
                                 transcription,
                                 conversation_histories[connection_id]
@@ -112,12 +119,12 @@ async def websocket_endpoint(websocket: WebSocket):
                                 "text": grok_response
                             })
 
-                        # Clear the buffer after processing
-                        audio_buffer = bytearray()
+                        # VAD detector has already been reset in process_audio
 
                 elif message["type"] == "reset":
-                    # Reset the conversation
+                    # Reset the conversation and VAD detector
                     conversation_histories[connection_id] = []
+                    vad_detector.reset()
                     await websocket.send_json({
                         "type": "info",
                         "message": "Conversation reset."

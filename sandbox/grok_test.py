@@ -3,8 +3,7 @@ import json
 import os
 
 # Get API key from environment variable (recommended for security)
-# XAI_API_KEY = os.getenv("XAI_API_KEY")  # Set this in your environment, e.g., export XAI_API_KEY='your_key_here'
-XAI_API_KEY = ""
+XAI_API_KEY = os.getenv("XAI_API_KEY")  # Set this in your environment, e.g., export XAI_API_KEY='your_key_here'
 if not XAI_API_KEY:
     raise ValueError("Please set the XAI_API_KEY environment variable")
 
