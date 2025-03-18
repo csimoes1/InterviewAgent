@@ -113,14 +113,19 @@ main {
     border-radius: var(--border-radius);
     padding: 20px;
     margin-bottom: 20px;
-    overflow-y: auto;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
 }
 
 .conversation {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    overflow-y: auto;
+    flex-grow: 1;
+    scroll-behavior: smooth; /* Enable smooth scrolling */
+    padding-right: 10px; /* Add space for scrollbar */
 }
 
 .message {
@@ -139,5 +144,127 @@ main {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* User message */
+.message.user {
+    align-self: flex-end;
+    background-color: var(--message-user-bg);
+    border-bottom-right-radius: 0;
+}
+
+/* AI message */
+.message.assistant {
+    align-self: flex-start;
+    background-color: var(--message-ai-bg);
+    border-bottom-left-radius: 0;
+}
+
+/* System message */
+.message.system {
+    align-self: center;
+    background-color: var(--message-system-bg);
+    max-width: 90%;
+    text-align: center;
+    font-style: italic;
+}
+
+.message-content {
+    margin-bottom: 5px;
+}
+
+.message-time {
+    font-size: 0.7em;
+    text-align: right;
+    opacity: 0.7;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.control-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.control-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.control-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.control-button .icon {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+#start-button {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+#stop-button {
+    background-color: #e53e3e;
+    color: white;
+}
+
+footer {
+    text-align: center;
+    margin-top: auto;
+    padding: 20px 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Custom scrollbar styles */
+.conversation::-webkit-scrollbar {
+    width: 8px;
+}
+
+.conversation::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+}
+
+.conversation::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.conversation::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox scrollbar */
+.conversation {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05);
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .message {
+        max-width: 90%;
     }
 }

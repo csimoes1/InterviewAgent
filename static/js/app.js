@@ -15,16 +15,67 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create audio handler
     const audioHandler = new AudioHandler();
 
+    // Auto-scroll variables
+    let isScrolledToBottom = true;
+    let scrollObserver = null;
+
     // Event listeners
     startButton.addEventListener('click', startRecording);
     stopButton.addEventListener('click', stopRecording);
     resetButton.addEventListener('click', resetConversation);
+
+    // Set up scroll detection
+    setupScrollDetection();
 
     // Set up audio handler callbacks
     audioHandler.onStatusChange = updateStatus;
     audioHandler.onTranscription = handleTranscription;
     audioHandler.onAIResponse = handleAIResponse;
     audioHandler.onError = handleError;
+
+    /**
+     * Set up scroll position detection
+     */
+    function setupScrollDetection() {
+        // Track whether user has scrolled away from bottom
+        conversationElement.addEventListener('scroll', () => {
+            const scrollPosition = conversationElement.scrollTop + conversationElement.clientHeight;
+            const scrollHeight = conversationElement.scrollHeight;
+
+            // Consider "close to bottom" if within 50px of bottom
+            isScrolledToBottom = (scrollHeight - scrollPosition) < 50;
+        });
+
+        // Set up mutation observer to detect when content is added
+        scrollObserver = new MutationObserver((mutations) => {
+            // If user is scrolled to bottom, keep them at bottom when new content is added
+            if (isScrolledToBottom) {
+                scrollToBottom(true);
+            }
+        });
+
+        // Start observing
+        scrollObserver.observe(conversationElement, {
+            childList: true,
+            subtree: true,
+            characterData: true
+        });
+    }
+
+    /**
+     * Scroll conversation to bottom
+     */
+    function scrollToBottom(smooth = false) {
+        // Use smooth scrolling animation when requested
+        if (smooth) {
+            conversationElement.scrollTo({
+                top: conversationElement.scrollHeight,
+                behavior: 'smooth'
+            });
+        } else {
+            conversationElement.scrollTop = conversationElement.scrollHeight;
+        }
+    }
 
     /**
      * Start recording audio
@@ -70,6 +121,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add system message
         addMessage('system', 'Conversation has been reset.');
+
+        // Force scroll to bottom on reset
+        scrollToBottom();
     }
 
     /**
@@ -122,8 +176,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         conversationElement.appendChild(messageDiv);
 
-        // Scroll to bottom
-        conversationElement.scrollTop = conversationElement.scrollHeight;
+        // The MutationObserver will handle scrolling if user is at bottom
+        // But we'll also force a scroll when a new message is added
+        scrollToBottom(true);
     }
 
     /**
@@ -140,6 +195,9 @@ document.addEventListener('DOMContentLoaded', () => {
             await audioHandler.initialize();
 
             updateStatus('Ready to start');
+
+            // Initial scroll to bottom
+            scrollToBottom();
         } catch (error) {
             handleError(error.message);
         }
@@ -150,6 +208,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle page unload
     window.addEventListener('beforeunload', () => {
+        // Clean up observer
+        if (scrollObserver) {
+            scrollObserver.disconnect();
+        }
+
         audioHandler.close();
     });
 });
