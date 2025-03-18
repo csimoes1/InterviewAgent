@@ -57,13 +57,16 @@ main {
     background-color: white;
     padding: 10px 20px;
     border-radius: var(--border-radius);
-    margin-bottom: 15px; /* Slightly reduced margin */
+    margin-bottom: 15px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: 10px;
 }
+
 .status {
     font-weight: bold;
 }
@@ -272,4 +275,56 @@ footer {
     .message {
         max-width: 90%;
     }
+}
+
+/* When the status container wraps, ensure proper spacing */
+@media (max-width: 600px) {
+    .status-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .interviewer-info,
+    .status {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}
+
+/* For the interviewer info container */
+.interviewer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* For the interviewer name display */
+.interviewer-name {
+    font-weight: bold;
+    color: var(--primary-color);
+    padding: 5px 10px;
+    background-color: rgba(74, 107, 175, 0.1);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.interviewer-name::before {
+    content: "👤";
+    margin-right: 5px;
+}
+
+/* For the interviewer email display */
+.interviewer-email {
+    font-size: 0.9rem;
+    color: #666;
+    padding: 2px 10px;
+    display: flex;
+    align-items: center;
+}
+
+.interviewer-email::before {
+    content: "✉️";
+    margin-right: 5px;
+    font-size: 0.8rem;
 }

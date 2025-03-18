@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Interview</h1>
+  </header>
+
+  <main>
+    <div class="status-container">
+      <div id="interviewer-info" class="interviewer-info">
+        <span id="interviewer-name" class="interviewer-name"></span>
+        <span id="interviewer-email" class="interviewer-email"></span>
+      </div>
+      <div id="status" class="status">Ready to start</div>
+      <div id="listening-indicator" class="listening-indicator">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+      </div>
+    </div>
+
+    <div class="conversation-container">
+      <div id="conversation" class="conversation">
+        <div class="message system">
+          <div class="message-content">
+            Hello! I'm ready to chat. Click the microphone button and start speaking.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="start-button" class="control-button">
+        <span class="icon">🎤</span>
+        <span class="label">Start</span>
+      </button>
+      <button id="stop-button" class="control-button" disabled>
+        <span class="icon">⏹️</span>
+        <span class="label">Stop</span>
+      </button>
+      <button id="reset-button" class="control-button">
+        <span class="icon">🔄</span>
+        <span class="label">Reset</span>
+      </button>
+    </div>
+  </main>
+
+  <footer>
+    <p>Powered by WebRTC, Whisper, and X.AI's Grok</p>
+  </footer>
+</div>
+
+<!-- Load the users constants file -->
+<script src="/static/js/users.js"></script>
+<script src="/static/js/webrtc.js"></script>
+<script src="/static/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Get user info from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const nameParam = urlParams.get('name');
+    const emailParam = urlParams.get('email');
+
+    // Try to get user info from localStorage as fallback
+    const nameFromStorage = localStorage.getItem('userName');
+    const emailFromStorage = localStorage.getItem('userEmail');
+
+    // Use params from URL or localStorage
+    const userName = nameParam || nameFromStorage || 'Guest';
+    const userEmail = emailParam || emailFromStorage || '';
+
+    // Update page title
+    document.title = `Interview with ${userName}`;
+
+    // Update header
+    const headerElement = document.querySelector('header h1');
+    if (headerElement) {
+      headerElement.textContent = `Interview with ${userName}`;
+    }
+
+    // Display user info in status container
+    const nameElement = document.getElementById('interviewer-name');
+    if (nameElement) {
+      nameElement.textContent = userName;
+    }
+
+    const emailElement = document.getElementById('interviewer-email');
+    if (emailElement && userEmail) {
+      emailElement.textContent = userEmail;
+    }
+
+    // Update initial message
+    const initialMessage = document.querySelector('.message.system .message-content');
+    if (initialMessage) {
+      initialMessage.textContent = `Hello ${userName}! I'm ready for our interview. Click the microphone button and start speaking.`;
+    }
+
+    // Add user info to audio handler (if it exists)
+    if (window.audioHandler && typeof window.audioHandler.setUserInfo === 'function') {
+      window.audioHandler.setUserInfo({
+        name: userName,
+        email: userEmail
+      });
+    }
+
+    // Redirect to welcome page if no valid user info is available
+    if (!nameParam && !nameFromStorage) {
+      window.location.href = 'index.html';
+    }
+  });
+</script>
+</body>
+</html>
