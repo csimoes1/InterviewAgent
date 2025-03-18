@@ -43,11 +43,11 @@ class GrokService:
         try:
             # Prepare messages with history
             messages = []
-
+            system_prompt = "You are a helpful voice assistant. Respond concisely and clearly as your responses will be read aloud."
             # Add system message for context
             messages.append({
                 "role": "system",
-                "content": "You are a helpful voice assistant. Respond concisely and clearly as your responses will be read aloud."
+                "content": system_prompt
             })
 
             # Add conversation history if available
