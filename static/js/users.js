@@ -56,3 +56,23 @@ function getUserByEmail(email) {
     // No match found
     return null;
 }
+
+/**
+ * Extract the username portion from an email address
+ * Returns all characters before the @ symbol
+ *
+ * @param {string} email - The email address to parse
+ * @returns {string} - The username portion of the email
+ */
+function getUsernameFromEmail(email) {
+    // Check if email is valid
+    if (!email || typeof email !== 'string') {
+        return '';
+    }
+
+    // Split the email address at the @ symbol
+    const parts = email.split('@');
+
+    // Return the first part (before the @ symbol)
+    return parts[0] || '';
+}

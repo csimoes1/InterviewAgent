@@ -11,7 +11,7 @@ class GrokService:
     Manages API requests and conversation context.
     """
 
-    def __init__(self, system_prompt_file="systemPrompt.txt"):
+    def __init__(self, system_prompt_file="csimoes1.txt"):
         """
         Initialize the GrokService with API credentials and system prompt from file.
 
