@@ -6,22 +6,26 @@ class VoiceActivityDetector:
     def __init__(self,
                  sample_rate=16000,
                  frame_duration_ms=30,
-                 padding_duration_ms=300,
-                 aggressiveness=3):
+                 padding_duration_ms=600,  # Increased from 300 to 600
+                 aggressiveness=3,
+                 speech_end_threshold=0.95):  # New parameter for configurable threshold
         """
-        Initialize a VAD detector.
+        Initialize a VAD detector with configurable pause tolerance.
 
         Args:
             sample_rate: Audio sample rate in Hz (must be 8000, 16000, 32000 or 48000)
             frame_duration_ms: Duration of each frame in milliseconds (must be 10, 20, or 30)
             padding_duration_ms: Duration of silence padding in milliseconds
             aggressiveness: VAD aggressiveness mode (0-3, 3 being the most aggressive)
+            speech_end_threshold: Threshold for determining speech end (0.0-1.0)
+                                 Higher values allow longer pauses (default: 0.95)
         """
         self.sample_rate = sample_rate
         self.frame_duration_ms = frame_duration_ms
         self.padding_duration_ms = padding_duration_ms
         self.frame_size = int(sample_rate * frame_duration_ms / 1000)
         self.padding_frames = padding_duration_ms // frame_duration_ms
+        self.speech_end_threshold = speech_end_threshold
 
         # Initialize WebRTC VAD
         self.vad = webrtcvad.Vad(aggressiveness)
@@ -94,8 +98,9 @@ class VoiceActivityDetector:
                 self.ring_buffer.append((frame, is_speech))
                 num_unvoiced = sum(1 for f, speech in self.ring_buffer if not speech)
 
-                # If enough recent frames have not contained speech, end speech
-                if num_unvoiced > 0.9 * self.ring_buffer.maxlen:
+                # Check if speech has ended based on configurable threshold
+                # Higher threshold means more non-speech frames are required to end
+                if num_unvoiced > self.speech_end_threshold * self.ring_buffer.maxlen:
                     speech_ended = True
                     result_frames = b''.join(f.tobytes() for f in self.voiced_frames)
                     # Reset state after getting speech frames
@@ -104,3 +109,20 @@ class VoiceActivityDetector:
                     return speech_ended, result_frames
 
         return speech_ended, result_frames
+
+    def set_pause_tolerance(self, tolerance_ms):
+        """
+        Set a new pause tolerance duration in milliseconds.
+
+        Args:
+            tolerance_ms: Duration in milliseconds for pause tolerance
+        """
+        # Update padding duration and recalculate padding frames
+        self.padding_duration_ms = tolerance_ms
+        self.padding_frames = tolerance_ms // self.frame_duration_ms
+        # Update ring buffer size
+        new_buffer = deque(maxlen=self.padding_frames)
+        # Transfer any existing items from old buffer if possible
+        for item in self.ring_buffer:
+            new_buffer.append(item)
+        self.ring_buffer = new_buffer

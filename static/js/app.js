@@ -47,18 +47,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Set up mutation observer to detect when content is added
-        scrollObserver = new MutationObserver((mutations) => {
+        scrollObserver = new MutationObserver(() => {
             // If user is scrolled to bottom, keep them at bottom when new content is added
             if (isScrolledToBottom) {
                 scrollToBottom(true);
             }
         });
 
-        // Start observing
+        // Start observing with the right configuration
         scrollObserver.observe(conversationElement, {
             childList: true,
             subtree: true,
-            characterData: true
+            characterData: true,
+            attributes: false // No need to watch attributes
         });
     }
 
@@ -66,15 +67,17 @@ document.addEventListener('DOMContentLoaded', () => {
      * Scroll conversation to bottom
      */
     function scrollToBottom(smooth = false) {
-        // Use smooth scrolling animation when requested
-        if (smooth) {
-            conversationElement.scrollTo({
-                top: conversationElement.scrollHeight,
-                behavior: 'smooth'
-            });
-        } else {
-            conversationElement.scrollTop = conversationElement.scrollHeight;
-        }
+        requestAnimationFrame(() => {
+            // Use smooth scrolling animation when requested
+            if (smooth) {
+                conversationElement.scrollTo({
+                    top: conversationElement.scrollHeight,
+                    behavior: 'smooth'
+                });
+            } else {
+                conversationElement.scrollTop = conversationElement.scrollHeight;
+            }
+        });
     }
 
     /**
@@ -90,15 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
             stopButton.disabled = false;
             listeningIndicator.classList.add('active');
         }
-        // updateStatus('Initializing...');
-        //
-        // const started = await audioHandler.startRecording();
-        //
-        // if (started) {
-        //     startButton.disabled = true;
-        //     stopButton.disabled = false;
-        //     listeningIndicator.classList.add('active');
-        // }
     }
 
     /**
@@ -185,8 +179,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         conversationElement.appendChild(messageDiv);
 
-        // The MutationObserver will handle scrolling if user is at bottom
-        // But we'll also force a scroll when a new message is added
+        // Force a scroll to bottom after adding a new message
+        // This is separate from the MutationObserver-based scrolling
         scrollToBottom(true);
     }
 
