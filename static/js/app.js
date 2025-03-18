@@ -81,15 +81,24 @@ document.addEventListener('DOMContentLoaded', () => {
      * Start recording audio
      */
     async function startRecording() {
-        updateStatus('Initializing...');
-
-        const started = await audioHandler.startRecording();
-
-        if (started) {
+        // Only initialize and start after user interaction
+        const initialized = await audioHandler.initialize();
+        if (initialized) {
+            await audioHandler.startRecording();
+            // Update UI
             startButton.disabled = true;
             stopButton.disabled = false;
             listeningIndicator.classList.add('active');
         }
+        // updateStatus('Initializing...');
+        //
+        // const started = await audioHandler.startRecording();
+        //
+        // if (started) {
+        //     startButton.disabled = true;
+        //     stopButton.disabled = false;
+        //     listeningIndicator.classList.add('active');
+        // }
     }
 
     /**
