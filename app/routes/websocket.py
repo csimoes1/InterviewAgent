@@ -16,13 +16,19 @@ router = APIRouter()
 
 # Initialize services
 whisper_service = WhisperService()
-grok_service = GrokService()
+# We'll initialize GrokService instances per connection, based on user email
 
 # Active connections
 websocket_connections: Dict[str, WebSocket] = {}
 
 # Conversation histories for each connection
 conversation_histories: Dict[str, List[Dict]] = {}
+
+# Store GrokService instances for each connection
+grok_services: Dict[str, GrokService] = {}
+
+# User info for each connection
+user_info: Dict[str, Dict] = {}
 
 # this is where we receive the audio data from the client
 @router.websocket("/ws/audio")
@@ -38,6 +44,7 @@ async def websocket_endpoint(websocket: WebSocket):
     connection_id = str(uuid.uuid4())
     websocket_connections[connection_id] = websocket
     conversation_histories[connection_id] = []
+    user_info[connection_id] = {"email": None, "name": None}
 
     # Initialize VAD detector
     vad_detector = VoiceActivityDetector()
@@ -101,8 +108,8 @@ async def websocket_endpoint(websocket: WebSocket):
                                 "message": "Getting response from AI..."
                             })
 
-                            # Get response from Grok service
-                            grok_response = await grok_service.get_response(
+                            # Get response from appropriate Grok service
+                            grok_response = await get_grok_service(connection_id).get_response(
                                 transcription,
                                 conversation_histories[connection_id]
                             )
@@ -130,6 +137,26 @@ async def websocket_endpoint(websocket: WebSocket):
                         "message": "Conversation reset."
                     })
 
+                elif message["type"] == "user_info":
+                    # Store user info and initialize personalized Grok service
+                    user_email = message.get("email")
+                    user_name = message.get("name")
+
+                    if user_email:
+                        user_info[connection_id]["email"] = user_email
+                        user_info[connection_id]["name"] = user_name
+
+                        # Initialize a new GrokService with the user's email
+                        initialize_grok_service(connection_id, user_email)
+
+                        logger.info(f"Initialized personalized GrokService for user: {user_email}")
+
+                        # Send confirmation
+                        await websocket.send_json({
+                            "type": "info",
+                            "message": f"Personalized settings loaded for {user_name or user_email}"
+                        })
+
     except WebSocketDisconnect:
         logger.info(f"WebSocket disconnected: {connection_id}")
     except Exception as e:
@@ -144,3 +171,37 @@ async def websocket_endpoint(websocket: WebSocket):
             del websocket_connections[connection_id]
         if connection_id in conversation_histories:
             del conversation_histories[connection_id]
+        if connection_id in grok_services:
+            del grok_services[connection_id]
+        if connection_id in user_info:
+            del user_info[connection_id]
+
+
+def initialize_grok_service(connection_id: str, user_email: str):
+    """
+    Initialize a new GrokService instance for the given connection and user email.
+
+    Args:
+        connection_id: The unique identifier for the WebSocket connection
+        user_email: The user's email address
+    """
+    # Create a new GrokService instance with the user's email
+    grok_services[connection_id] = GrokService(email=user_email)
+
+
+def get_grok_service(connection_id: str) -> GrokService:
+    """
+    Get the GrokService instance for the given connection ID.
+    If none exists, create a default one.
+
+    Args:
+        connection_id: The unique identifier for the WebSocket connection
+
+    Returns:
+        The appropriate GrokService instance
+    """
+    if connection_id not in grok_services:
+        # Create a default service if none exists
+        grok_services[connection_id] = GrokService()
+
+    return grok_services[connection_id]

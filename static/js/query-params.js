@@ -22,7 +22,7 @@ function updateTitleFromQueryParams() {
         // Update the initial system message if it exists
         const initialMessage = document.querySelector('.message.system .message-content');
         if (initialMessage) {
-            initialMessage.textContent = `Hello ${name}! I'm ready to chat. Click the microphone button and start speaking.`;
+            initialMessage.textContent = `Hello ${name}!`;
         }
     }
 }

@@ -11,13 +11,21 @@ class GrokService:
     Manages API requests and conversation context.
     """
 
-    def __init__(self, system_prompt_file="csimoes1.txt"):
+    def __init__(self, email=""):
         """
         Initialize the GrokService with API credentials and system prompt from file.
 
         Args:
             system_prompt_file: Path to the file containing the system prompt
         """
+        self.system_prompt_file = "systemPrompt.txt"
+        if(email):
+            # to get teh system_propmt file for the specific user trim everything before the @ sign
+            email_prefix = email.split('@')[0]
+            self.system_prompt_file = f"{email_prefix}.txt"
+
+        logger.info(f"system_prompt_file: {self.system_prompt_file}")
+
         self.api_key = os.environ.get("GROK_API_KEY")
         if not self.api_key:
             logger.warning("GROK_API_KEY not set in environment variables")
@@ -26,7 +34,7 @@ class GrokService:
         self.model = os.environ.get("GROK_MODEL", "grok-2-latest")
 
         # Load system prompt from file
-        self.system_prompt = self._load_system_prompt(system_prompt_file)
+        self.system_prompt = self._load_system_prompt(self.system_prompt_file)
 
         logger.info(f"GrokService initialized with model: {self.model}")
         logger.info(f"System prompt loaded: {self.system_prompt[:50]}..." if self.system_prompt else "No system prompt loaded")

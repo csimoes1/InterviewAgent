@@ -65,17 +65,19 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     // Get user info from URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const nameParam = urlParams.get('name');
-    const emailParam = urlParams.get('email');
+    // const urlParams = new URLSearchParams(window.location.search);
+    // const nameParam = urlParams.get('name');
+    // const emailParam = urlParams.get('email');
+    // console.log(`URL Params email=${emailParam} username=${nameParam}`);
 
     // Try to get user info from localStorage as fallback
     const nameFromStorage = localStorage.getItem('userName');
     const emailFromStorage = localStorage.getItem('userEmail');
+    console.log(`localStorage email=${emailFromStorage} username=${nameFromStorage}`);
 
     // Use params from URL or localStorage
-    const userName = nameParam || nameFromStorage || 'Guest';
-    const userEmail = emailParam || emailFromStorage || '';
+    const userName = nameFromStorage || 'Guest';
+    const userEmail = emailFromStorage || '';
 
     // Update page title
     document.title = `Interview with ${userName}`;
@@ -100,15 +102,19 @@
     // Update initial message
     const initialMessage = document.querySelector('.message.system .message-content');
     if (initialMessage) {
-      initialMessage.textContent = `Hello ${userName}! I'm ready for our interview. Click the microphone button and start speaking.`;
+      initialMessage.textContent = `Hello ${userName}! Please click the microphone Start button and say "Let's begin".`;
     }
 
     // Add user info to audio handler (if it exists)
     if (window.audioHandler && typeof window.audioHandler.setUserInfo === 'function') {
+      console.log(`window.audioHandler was TRUE, localStorage email=${emailFromStorage} username=${nameFromStorage}`);
+
       window.audioHandler.setUserInfo({
         name: userName,
         email: userEmail
       });
+    } else {
+      console.log('window.audioHandler was FALSE');
     }
 
     // Redirect to welcome page if no valid user info is available

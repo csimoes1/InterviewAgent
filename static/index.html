@@ -136,6 +136,7 @@
 <script src="/static/js/users.js"></script>
 
 <script>
+  console.log('STARTED index.html')
   document.addEventListener('DOMContentLoaded', () => {
     const welcomeForm = document.getElementById('welcome-form');
     const errorMessage = document.getElementById('error-message');
@@ -149,14 +150,15 @@
       if (email) {
         // Look up the user's name from their email
         const userName = getUserByEmail(email);
-
+        console.log(`User name for email ${email} is ${userName}`);
         if (userName) {
           // Store both email and name in localStorage
           localStorage.setItem('userEmail', email);
           localStorage.setItem('userName', userName);
 
           // Redirect to the interview page with the name as a query parameter
-          window.location.href = `interview.html?name=${encodeURIComponent(userName)}&email=${encodeURIComponent(email)}`;
+          // window.location.href = `interview.html?name=${encodeURIComponent(userName)}&email=${encodeURIComponent(email)}`;
+          window.location.href = `interview.html`;
         } else {
           // Show error message if email not found
           errorMessage.classList.add('visible');

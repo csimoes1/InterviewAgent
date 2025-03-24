@@ -18,6 +18,17 @@ class AudioHandler {
         this.sampleRate = 16000; // Target sample rate for whisper
         this.bufferSize = 4096;  // Buffer size for audio processing
 
+        // User information
+        const lsEmail = localStorage.getItem('userEmail');
+        const lsName = localStorage.getItem('userName');
+
+        // this.log(`lsEmail=${lsEmail} lsName=${lsName}`);
+
+        this.userInfo = {
+            email: lsEmail,
+            name: lsName
+        };
+
         // Event callbacks
         this.onStatusChange = null;
         this.onTranscription = null;
@@ -31,6 +42,38 @@ class AudioHandler {
         this.logInterval = 2000; // Log every 2 seconds to avoid console spam
 
         console.log("🎙️ AudioHandler initialized");
+    }
+
+    /**
+     * Set user information
+     * @param {Object} userInfo - User information object with name and email properties
+     */
+    setUserInfo(userInfo) {
+        if (userInfo && typeof userInfo === 'object') {
+            this.userInfo.name = userInfo.name || null;
+            this.userInfo.email = userInfo.email || null;
+
+            this.log(`User info set: ${this.userInfo.name} (${this.userInfo.email})`, true);
+
+            // If already connected to WebSocket, send user info
+            this.sendUserInfoToServer();
+        }
+    }
+
+    /**
+     * Send user information to the server
+     */
+    sendUserInfoToServer() {
+        this.log(`Sending user info to server email=${this.userInfo.email} name=${this.userInfo.name}`);
+        if (this.websocket && this.websocket.readyState === WebSocket.OPEN && this.userInfo.email) {
+            this.log(`Sending user info to server: ${this.userInfo.email}`);
+
+            this.websocket.send(JSON.stringify({
+                type: 'user_info',
+                email: this.userInfo.email,
+                name: this.userInfo.name
+            }));
+        }
     }
 
     /**
@@ -100,6 +143,10 @@ class AudioHandler {
 
         this.websocket.onopen = () => {
             this.log("✅ WebSocket connected", true);
+
+            // Send user info if available
+            this.sendUserInfoToServer();
+
             if (this.onStatusChange) {
                 this.onStatusChange('Connected');
             }

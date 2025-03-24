@@ -2,6 +2,8 @@ import requests
 import json
 import os
 
+from app.main import logger
+
 # Get API key from environment variable (recommended for security)
 XAI_API_KEY = os.getenv("XAI_API_KEY")  # Set this in your environment, e.g., export XAI_API_KEY='your_key_here'
 if not XAI_API_KEY:
@@ -16,17 +18,31 @@ headers = {
     "Authorization": f"Bearer {XAI_API_KEY}"
 }
 
+file_path = "/Users/csimoes/Projects/Python/InterviewAgent/mortenmo.txt"
+system_prompt = ""
+try:
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            system_prompt = file.read().strip()
+    else:
+        logger.warning(f"System prompt file {file_path} not found, using default")
+
+except Exception as e:
+    logger.error(f"Error loading system prompt from {file_path}: {e}", exc_info=True)
+
+
+
 # Request payload
 payload = {
     "model": "grok-2-latest",
     "messages": [
         {
             "role": "system",
-            "content": "You are Grok, a chatbot inspired by the Hitchhikers Guide to the Galaxy."
+            "content": system_prompt
         },
         {
             "role": "user",
-            "content": "What do you get when you combine yellow and blue?"
+            "content": "Give me 3 sentences summarizing the experience of Morten Moeller using the resume passed ot you in the system prompt."
         }
     ],
     "stream": False,
@@ -50,3 +66,4 @@ except requests.exceptions.HTTPError as err:
         print(f"Response details: {response.text}")
 except Exception as e:
     print(f"An error occurred: {e}")
+
