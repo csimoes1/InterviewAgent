@@ -92,12 +92,12 @@ class GrokService:
             messages = []
 
             # if conversation history is getting longer than n messages, tell system to wrap it up
-            if conversation_history and len(conversation_history) > 5:
+            if conversation_history and len(conversation_history) > 4:
                 messages.append({
                     "role": "system",
                     "content": self.system_prompt + " Try to end the interview gracefully and then summarize the conversation with a 2 sentence summary.  Finally end with a quote related to this conversation and be sure to cite the author of the quote."
                 })
-            elif conversation_history and len(conversation_history) > 7:
+            elif conversation_history and len(conversation_history) > 6:
                 messages.append({
                     "role": "system",
                     "content": self.system_prompt + " End the interview now saying 'I'm sorry but we are out of time'.  Thank the guest and provide a quote related to this conversation and be sure to cite the author of the quote."
