@@ -3,6 +3,8 @@ import aiohttp
 import logging
 from typing import Dict, List, Optional
 
+from sympy.matrices.expressions.matmul import combine_one_matrices
+
 logger = logging.getLogger(__name__)
 
 class GrokService:
@@ -88,6 +90,20 @@ class GrokService:
         try:
             # Prepare messages with history
             messages = []
+
+            # if conversation history is getting longer than n messages, tell system to wrap it up
+            if conversation_history and len(conversation_history) > 5:
+                messages.append({
+                    "role": "system",
+                    "content": self.system_prompt + " Try to end the interview gracefully and then summarize the conversation with a 2 sentence summary.  Finally end with a quote related to this conversation and be sure to cite the author of the quote."
+                })
+            elif conversation_history and len(conversation_history) > 7:
+                messages.append({
+                    "role": "system",
+                    "content": self.system_prompt + " End the interview now saying 'I'm sorry but we are out of time'.  Thank the guest and provide a quote related to this conversation and be sure to cite the author of the quote."
+                })
+
+
 
             # Add system message for context
             messages.append({
