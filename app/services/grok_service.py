@@ -81,6 +81,7 @@ class GrokService:
         Returns:
             The AI's response text
         """
+        logger.debug("user_message: " + user_message)
         if not self.api_key:
             return "Error: API key not configured. Please set the GROK_API_KEY environment variable."
 

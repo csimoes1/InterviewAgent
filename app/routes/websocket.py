@@ -108,6 +108,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                 "message": "Getting response from AI..."
                             })
 
+                            logger.debug("websocket.py: get_grok_service.get_response about to be called")
                             # Get response from appropriate Grok service
                             grok_response = await get_grok_service(connection_id).get_response(
                                 transcription,

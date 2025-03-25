@@ -42,7 +42,7 @@ payload = {
         },
         {
             "role": "user",
-            "content": "Give me 3 sentences summarizing the experience of Morten Moeller using the resume passed ot you in the system prompt."
+            "content": "Write me 3 sentences summarizing the experience of Morten Moeller using the resume passed in the system prompt."
         }
     ],
     "stream": False,

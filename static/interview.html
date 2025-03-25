@@ -31,7 +31,7 @@
       <div id="conversation" class="conversation">
         <div class="message system">
           <div class="message-content">
-            Hello! I'm ready to chat. Click the microphone button and start speaking.
+            Loading introduction...
           </div>
         </div>
       </div>
@@ -68,24 +68,22 @@
     // const urlParams = new URLSearchParams(window.location.search);
     // const nameParam = urlParams.get('name');
     // const emailParam = urlParams.get('email');
-    // console.log(`URL Params email=${emailParam} username=${nameParam}`);
 
     // Try to get user info from localStorage as fallback
     const nameFromStorage = localStorage.getItem('userName');
     const emailFromStorage = localStorage.getItem('userEmail');
-    console.log(`localStorage email=${emailFromStorage} username=${nameFromStorage}`);
 
     // Use params from URL or localStorage
     const userName = nameFromStorage || 'Guest';
     const userEmail = emailFromStorage || '';
 
     // Update page title
-    document.title = `Interview with ${userName}`;
+    document.title = `LexLLM Interview of ${userName}`;
 
     // Update header
     const headerElement = document.querySelector('header h1');
     if (headerElement) {
-      headerElement.textContent = `Interview with ${userName}`;
+      headerElement.textContent = `LexLLM Interview of ${userName}`;
     }
 
     // Display user info in status container
@@ -99,29 +97,124 @@
       emailElement.textContent = userEmail;
     }
 
-    // Update initial message
-    const initialMessage = document.querySelector('.message.system .message-content');
-    if (initialMessage) {
-      initialMessage.textContent = `Hello ${userName}! Please click the microphone Start button and say "Let's begin".`;
-    }
-
     // Add user info to audio handler (if it exists)
     if (window.audioHandler && typeof window.audioHandler.setUserInfo === 'function') {
-      console.log(`window.audioHandler was TRUE, localStorage email=${emailFromStorage} username=${nameFromStorage}`);
-
       window.audioHandler.setUserInfo({
         name: userName,
         email: userEmail
       });
+    }
+
+    // Get initial introduction from Grok
+    if (userEmail) {
+      fetchIntroduction(userEmail, userName);
     } else {
-      console.log('window.audioHandler was FALSE');
+      // Update initial message if no email is available
+      const initialMessage = document.querySelector('.message.system .message-content');
+      if (initialMessage) {
+        initialMessage.textContent = `Hello! I'm ready for our interview. Click the microphone button and start speaking.`;
+      }
     }
 
     // Redirect to welcome page if no valid user info is available
-    if (!nameParam && !nameFromStorage) {
+    if (!nameFromStorage) {
       window.location.href = 'index.html';
     }
   });
+
+  /**
+   * Fetch a personalized introduction from the Grok API
+   *
+   * @param {string} email - User's email address
+   * @param {string} name - User's name
+   */
+  async function fetchIntroduction(email, name) {
+    try {
+      const status = document.getElementById('status');
+      if (status) {
+        status.textContent = 'Fetching introduction...';
+      }
+
+      // Prepare request data
+      const requestData = {
+        email: email,
+        messages: [
+          {
+            role: "user",
+            content: `Write me 3 sentences summarizing the experience of ${name} using the resume passed in the system prompt.`
+          }
+        ]
+      };
+
+      // Make API request
+      const response = await fetch('/api/introduction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      } else {
+        console.log('Introduction fetched successfully, response:', response);
+      }
+
+      const data = await response.json();
+
+      // Find the system message in the conversation
+      const initialMessage = document.querySelector('.message.system .message-content');
+      if (initialMessage && data.response) {
+        // Update the message with the introduction
+        initialMessage.textContent = "The following is a conversation with " + name + ". " + data.response + "And now dear friends here is " + name;
+
+        // Add a new message showing it's ready
+        addReadyMessage(name);
+      }
+
+      if (status) {
+        status.textContent = 'Ready to start';
+      }
+    } catch (error) {
+      console.error('Error fetching introduction:', error);
+
+      // Update with a fallback message
+      const initialMessage = document.querySelector('.message.system .message-content');
+      if (initialMessage) {
+        initialMessage.textContent = `Hello ${name}! I'm ready for our interview. Click the microphone button and start speaking.`;
+      }
+
+      if (status) {
+        status.textContent = 'Ready to start';
+      }
+    }
+  }
+
+  /**
+   * Add a ready message to the conversation
+   */
+  function addReadyMessage(name) {
+    const conversation = document.getElementById('conversation');
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', 'system');
+
+    const contentDiv = document.createElement('div');
+    contentDiv.classList.add('message-content');
+    contentDiv.textContent = "Please click the Start button and say 'Let's begin' when you are ready.";
+
+    const timeDiv = document.createElement('div');
+    timeDiv.classList.add('message-time');
+    timeDiv.textContent = new Date().toLocaleTimeString();
+
+    messageDiv.appendChild(contentDiv);
+    messageDiv.appendChild(timeDiv);
+    conversation.appendChild(messageDiv);
+
+    // Scroll to bottom
+    conversation.scrollTop = conversation.scrollHeight;
+  }
+
 </script>
 </body>
 </html>

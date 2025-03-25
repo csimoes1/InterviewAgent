@@ -6,6 +6,7 @@ import logging
 from app.services.grok_service import GrokService
 
 logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/api")
 
 # Initialize services
@@ -21,6 +22,13 @@ class ConversationRequest(BaseModel):
 
 class ConversationResponse(BaseModel):
     response: str
+
+class IntroductionRequest(BaseModel):
+    email: str
+    messages: List[Message]
+
+# class IntroductionResponse(BaseModel):
+#     response: str
 
 @router.get("/health")
 async def health_check():
@@ -52,6 +60,7 @@ async def chat(request: ConversationRequest):
 
         last_user_message = user_messages[-1]["content"]
 
+        logger.debug("api.py grok_service.get_response about to be called")
         # Get response from Grok API
         response = await grok_service.get_response(last_user_message, messages)
 
@@ -59,4 +68,35 @@ async def chat(request: ConversationRequest):
 
     except Exception as e:
         logger.error(f"Error in chat endpoint: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/introduction", response_model=ConversationResponse)
+async def get_introduction(request: IntroductionRequest):
+    """
+    Get a personalized introduction from the Grok API.
+
+    Args:
+        request: The request with user email and optional name
+
+    Returns:
+        A personalized introduction
+    """
+    logger.debug("get_introduction request: " + str(request))
+    try:
+        # Create GrokService with user's email
+        grok_service = GrokService(email=request.email)
+
+        # Construct the prompt for the introduction
+        # prompt = "Write a 3 sentence introduction"
+        # if request.name:
+        #     prompt = f"Write a 3 sentence introduction for {request.name}"
+
+        # Get response from Grok API
+        logger.debug(f"About to call GrokService.get_response with request.messages ${request.messages}")
+        response = await grok_service.get_response(request.messages[0].content)
+
+        return ConversationResponse(response=response)
+
+    except Exception as e:
+        logger.error(f"Error getting introduction: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
