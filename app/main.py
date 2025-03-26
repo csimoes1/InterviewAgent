@@ -19,6 +19,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 logger.info("UVICORN LOGGER INITIALIZED")
+logger.debug("UVICORN LOGGER Showing DEBUG statements")
 
 # Create FastAPI app
 app = FastAPI(
