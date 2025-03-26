@@ -7,7 +7,7 @@ from app.services.grok_service import GrokService
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/lexllm/api")
+router = APIRouter(prefix="/api")
 
 # Initialize services
 grok_service = GrokService()
