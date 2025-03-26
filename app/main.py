@@ -40,8 +40,8 @@ app.include_router(websocket_router)
 app.include_router(api_router)
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
-app.mount("/", StaticFiles(directory="static", html=True), name="root")
+app.mount("/lexllm", StaticFiles(directory="lexllm"), name="lexllm")
+app.mount("/", StaticFiles(directory="lexllm", html=True), name="root")
 
 if __name__ == "__main__":
     logger.info("Starting server")
