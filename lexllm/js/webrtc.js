@@ -12,7 +12,7 @@ class AudioHandler {
         this.websocket = null;
         this.isRecording = false;
         this.processor = null;
-        this.websocketUrl = `ws://${window.location.host}/ws/audio`;
+        this.websocketUrl = `ws://${window.location.host}/lexllm/ws/audio`;
 
         // Audio processing parameters
         this.sampleRate = 16000; // Target sample rate for whisper
