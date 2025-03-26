@@ -31,7 +31,7 @@ grok_services: Dict[str, GrokService] = {}
 user_info: Dict[str, Dict] = {}
 
 # this is where we receive the audio data from the client
-@router.websocket("/lexllm/ws/audio")
+@router.websocket("/ws/audio")
 async def websocket_endpoint(websocket: WebSocket):
     """
     WebSocket endpoint for audio streaming.
