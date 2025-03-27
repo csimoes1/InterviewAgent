@@ -7,6 +7,10 @@ const USERS = {
     // known users
     "csimoes1@gmail.com": "Chris Simoes",
     "mortenmo@gmail.com": "Morten Moeller",
+    "mike.betzer@hypergiant.com": "Mike Betzer",
+    "ljordan@gmail.com": "Leslie Jordan",
+    "msimoes1325@gmail.com": "Mark Simoes",
+    "heero@sprintmail.com": "Greg Simoes",
 
 
     // Department managers
