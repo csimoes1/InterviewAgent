@@ -12,7 +12,9 @@ class AudioHandler {
         this.websocket = null;
         this.isRecording = false;
         this.processor = null;
-        this.websocketUrl = `ws://${window.location.host}/ws/audio`;
+        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        this.websocketUrl = `${protocol}${window.location.host}/ws/audio`;
+        // this.websocketUrl = `ws://${window.location.host}/ws/audio`;
 
         // Audio processing parameters
         this.sampleRate = 16000; // Target sample rate for whisper
