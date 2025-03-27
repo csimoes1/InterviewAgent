@@ -55,25 +55,33 @@
 
   <footer>
     <p>Powered by WebRTC, Whisper, and X.AI's Grok</p>
+    <p id="environment-indicator"></p>
   </footer>
 </div>
 
-<!-- Load the users constants file -->
+<!-- Load the environment detection script first -->
+<script src="/lexllm/js/environment.js"></script>
+
+<!-- Load other scripts -->
 <script src="/lexllm/js/users.js"></script>
 <script src="/lexllm/js/webrtc.js"></script>
 <script src="/lexllm/js/app.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Get user info from URL parameters
-    // const urlParams = new URLSearchParams(window.location.search);
-    // const nameParam = urlParams.get('name');
-    // const emailParam = urlParams.get('email');
+    // Display environment info (can be removed in production)
+    const envIndicator = document.getElementById('environment-indicator');
+    if (envIndicator) {
+      const env = window.appConfig.isProduction() ? 'Production' : 'Development';
+      envIndicator.textContent = `Environment: ${env}`;
+      // Only show in development
+      envIndicator.style.display = window.appConfig.isProduction() ? 'none' : 'block';
+    }
 
-    // Try to get user info from localStorage as fallback
+    // Get user info from localStorage
     const nameFromStorage = localStorage.getItem('userName');
     const emailFromStorage = localStorage.getItem('userEmail');
 
-    // Use params from URL or localStorage
+    // Use params from localStorage
     const userName = nameFromStorage || 'Guest';
     const userEmail = emailFromStorage || '';
 
@@ -135,6 +143,9 @@
         status.textContent = 'Fetching introduction...';
       }
 
+      // Get API base URL from environment config
+      const apiBaseUrl = window.appConfig.getApiBaseUrl();
+
       // Prepare request data
       const requestData = {
         email: email,
@@ -146,8 +157,8 @@
         ]
       };
 
-      // Make API request
-      const response = await fetch('/lexllm/api/introduction', {
+      // Make API request using the environment-specific URL
+      const response = await fetch(`${apiBaseUrl}/introduction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -214,7 +225,6 @@
     // Scroll to bottom
     conversation.scrollTop = conversation.scrollHeight;
   }
-
 </script>
 </body>
 </html>

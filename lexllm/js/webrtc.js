@@ -12,9 +12,11 @@ class AudioHandler {
         this.websocket = null;
         this.isRecording = false;
         this.processor = null;
-        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        this.websocketUrl = `${protocol}${window.location.host}/ws/audio`;
-        // this.websocketUrl = `ws://${window.location.host}/ws/audio`;
+
+        // Get WebSocket URL from environment configuration
+        this.websocketUrl = window.appConfig ?
+            window.appConfig.getWebSocketUrl() :
+            `ws://${window.location.host}/ws/audio`;
 
         // Audio processing parameters
         this.sampleRate = 16000; // Target sample rate for whisper
@@ -23,8 +25,6 @@ class AudioHandler {
         // User information
         const lsEmail = localStorage.getItem('userEmail');
         const lsName = localStorage.getItem('userName');
-
-        // this.log(`lsEmail=${lsEmail} lsName=${lsName}`);
 
         this.userInfo = {
             email: lsEmail,
@@ -43,7 +43,13 @@ class AudioHandler {
         this.lastLogTime = 0;
         this.logInterval = 2000; // Log every 2 seconds to avoid console spam
 
-        console.log("🎙️ AudioHandler initialized");
+        console.log(`🎙️ AudioHandler initialized with WebSocket URL: ${this.websocketUrl}`);
+
+        // Log environment information
+        if (window.appConfig) {
+            const env = window.appConfig.isProduction() ? 'Production' : 'Development';
+            console.log(`🌐 Running in ${env} environment`);
+        }
     }
 
     /**
@@ -140,6 +146,7 @@ class AudioHandler {
         }
 
         this.log(`Connecting to WebSocket server at ${this.websocketUrl}...`);
+        console.log(`Debug - WebSocket URL: ${this.websocketUrl}`);
 
         this.websocket = new WebSocket(this.websocketUrl);
 
