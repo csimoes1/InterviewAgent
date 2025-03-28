@@ -18,7 +18,7 @@ headers = {
     "Authorization": f"Bearer {XAI_API_KEY}"
 }
 
-file_path = "/Users/csimoes/Projects/Python/InterviewAgent/mortenmo.txt"
+file_path = "/resumes/mortenmo.txt"
 system_prompt = ""
 try:
     if os.path.exists(file_path):

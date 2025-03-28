@@ -20,11 +20,11 @@ class GrokService:
         Args:
             system_prompt_file: Path to the file containing the system prompt
         """
-        self.system_prompt_file = "systemPrompt.txt"
+        self.system_prompt_file = "resumes/" + "systemPrompt.txt"
         if(email):
             # to get teh system_propmt file for the specific user trim everything before the @ sign
             email_prefix = email.split('@')[0]
-            self.system_prompt_file = f"{email_prefix}.txt"
+            self.system_prompt_file = f"resumes/{email_prefix}.txt"
 
         logger.info(f"system_prompt_file: {self.system_prompt_file}")
 
@@ -167,25 +167,3 @@ class GrokService:
         except Exception as e:
             logger.error(f"Error calling Grok API: {e}", exc_info=True)
             return f"I'm sorry, there was an error: {str(e)}"
-
-    def reload_system_prompt(self, file_path="systemPrompt.txt"):
-        """
-        Reload the system prompt from the file.
-        Useful for updating the prompt without restarting the service.
-
-        Args:
-            file_path: Path to the system prompt file
-
-        Returns:
-            True if successful, False otherwise
-        """
-        try:
-            new_prompt = self._load_system_prompt(file_path)
-            if new_prompt:
-                self.system_prompt = new_prompt
-                logger.info("System prompt reloaded successfully")
-                return True
-            return False
-        except Exception as e:
-            logger.error(f"Error reloading system prompt: {e}", exc_info=True)
-            return False
