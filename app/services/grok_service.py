@@ -3,11 +3,13 @@ import aiohttp
 import logging
 from typing import Dict, List, Optional
 
-from sympy.matrices.expressions.matmul import combine_one_matrices
+from app.services.user_service import get_user_by_email
 
 logger = logging.getLogger(__name__)
 
 class GrokService:
+    PROMPT_DIR = "prompts/"  # Directory where system prompt files are stored
+
     """
     Service for interacting with the Grok (X.AI) API.
     Manages API requests and conversation context.
@@ -20,13 +22,19 @@ class GrokService:
         Args:
             system_prompt_file: Path to the file containing the system prompt
         """
-        self.system_prompt_file = "resumes/" + "systemPrompt.txt"
+        self.system_prompt_file = self.PROMPT_DIR + "systemPrompt.txt"
+        self.resume = ""
+        self.name = ""
         if(email):
-            # to get teh system_propmt file for the specific user trim everything before the @ sign
+            self.name = get_user_by_email(email)
+            logger.info(f"Retrieved name for email '{email}': {self.name}")
+            # to get the resume file for the specific user trim everything before the @ sign
             email_prefix = email.split('@')[0]
-            self.system_prompt_file = f"resumes/{email_prefix}.txt"
+            resume_file = f"{self.PROMPT_DIR}{email_prefix}.txt"
+            self.resume = self._load_system_prompt(resume_file)
 
         logger.info(f"system_prompt_file: {self.system_prompt_file}")
+        logger.info(f"resume file: {self.resume}")
 
         self.api_key = os.environ.get("GROK_API_KEY")
         if not self.api_key:
@@ -36,7 +44,11 @@ class GrokService:
         self.model = os.environ.get("GROK_MODEL", "grok-2-latest")
 
         # Load system prompt from file
-        self.system_prompt = self._load_system_prompt(self.system_prompt_file)
+        temp_str = self._load_system_prompt(self.system_prompt_file)
+        # replace placeholder with name in system prompt
+        self.preamble = temp_str.replace("[NAME_HERE]", self.name)
+
+        self.system_prompt = self.preamble + "\\n" + self.resume
 
         logger.info(f"GrokService initialized with model: {self.model}")
         logger.info(f"System prompt loaded: {self.system_prompt[:50]}..." if self.system_prompt else "No system prompt loaded")
@@ -51,7 +63,7 @@ class GrokService:
         Returns:
             The system prompt string, or a default if file doesn't exist
         """
-        default_prompt = "You are a helpful voice assistant. Respond concisely and clearly as your responses will be read aloud."
+        default_prompt = ""
 
         try:
             if os.path.exists(file_path):

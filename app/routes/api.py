@@ -4,6 +4,7 @@ from typing import List, Optional
 import logging
 
 from app.services.grok_service import GrokService
+from app.services.user_service import get_user_by_email
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +28,10 @@ class IntroductionRequest(BaseModel):
     email: str
     messages: List[Message]
 
-# class IntroductionResponse(BaseModel):
-#     response: str
+class UserResponse(BaseModel):
+    email: str
+    name: str
+
 
 @router.get("/health")
 async def health_check():
@@ -99,4 +102,22 @@ async def get_introduction(request: IntroductionRequest):
 
     except Exception as e:
         logger.error(f"Error getting introduction: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/user", response_model=UserResponse)
+async def get_user(email: str):
+    """
+    Get user name by email.
+
+    Args:
+        email: The email address to look up
+
+    Returns:
+        The email and user name if found, or null if not found
+    """
+    try:
+        name = get_user_by_email(email)
+        return UserResponse(email=email, name=name)
+    except Exception as e:
+        logger.error(f"Error in get_user endpoint: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))

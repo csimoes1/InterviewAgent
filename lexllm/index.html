@@ -142,37 +142,42 @@
     const welcomeForm = document.getElementById('welcome-form');
     const errorMessage = document.getElementById('error-message');
 
-    welcomeForm.addEventListener('submit', (e) => {
+    welcomeForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const emailInput = document.getElementById('user-email');
       const email = emailInput.value.trim();
 
       if (email) {
-        // Look up the user's name from their email
-        const userName = getUserByEmail(email);
-        console.log(`User name for email ${email} is ${userName}`);
-        if (userName) {
-          // Store both email and name in localStorage
-          localStorage.setItem('userEmail', email);
-          localStorage.setItem('userName', userName);
+        try {
+          const user = await getUserByEmail(email);
+          const userName = user ? user.name : null;
+          console.log(`User name for email ${email} is ${userName}`);
 
-          // Redirect to the interview page with the name as a query parameter
-          // window.location.href = `interview.html?name=${encodeURIComponent(userName)}&email=${encodeURIComponent(email)}`;
-          window.location.href = `lexllm/interview.html`;
-        } else {
-          // Show error message if email not found
-          errorMessage.classList.add('visible');
+          if (userName) {
+            // Store both email and name in localStorage
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userName', userName);
 
-          // Focus back on the email input
-          emailInput.focus();
+            // Redirect to the interview page with the name as a query parameter
+            // window.location.href = `interview.html?name=${encodeURIComponent(userName)}&email=${encodeURIComponent(email)}`;
+            window.location.href = `lexllm/interview.html`;
+          } else {
+            // Show error message if email not found
+            errorMessage.classList.add('visible');
 
-          // Shake the form slightly to indicate error
-          welcomeForm.style.animation = 'shake 0.5s ease-in-out';
-          setTimeout(() => {
-            welcomeForm.style.animation = '';
-          }, 500);
-        }
+            // Focus back on the email input
+            emailInput.focus();
+
+            // Shake the form slightly to indicate error
+            welcomeForm.style.animation = 'shake 0.5s ease-in-out';
+            setTimeout(() => {
+              welcomeForm.style.animation = '';
+            }, 500);
+          }
+        } catch (error) {
+          console.error('Error fetching user:', error);
+        }        // Look up the user's name from their email
       }
     });
 
