@@ -6,7 +6,7 @@
  */
 async function getUserByEmail(email) {
     try {
-        const response = await fetch(`/api/user?email=${encodeURIComponent(email)}`);
+        const response = await fetch(window.appConfig.getApiBaseUrl()+`/user?email=${encodeURIComponent(email)}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

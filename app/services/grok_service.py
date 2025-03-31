@@ -22,7 +22,7 @@ class GrokService:
         Args:
             system_prompt_file: Path to the file containing the system prompt
         """
-        self.system_prompt_file = self.PROMPT_DIR + "systemPrompt.txt"
+        # self.system_prompt_file = self.PROMPT_DIR + "systemPrompt.txt"
         self.resume = ""
         self.name = ""
         if(email):
@@ -31,9 +31,9 @@ class GrokService:
             # to get the resume file for the specific user trim everything before the @ sign
             email_prefix = email.split('@')[0]
             resume_file = f"{self.PROMPT_DIR}{email_prefix}.txt"
-            self.resume = self._load_system_prompt(resume_file)
+            self.resume = self._load_prompt_file(resume_file)
 
-        logger.info(f"system_prompt_file: {self.system_prompt_file}")
+        # logger.info(f"system_prompt_file: {self.system_prompt_file}")
         logger.info(f"resume file: {self.resume}")
 
         self.api_key = os.environ.get("GROK_API_KEY")
@@ -43,17 +43,20 @@ class GrokService:
         self.api_url = "https://api.x.ai/v1/chat/completions"
         self.model = os.environ.get("GROK_MODEL", "grok-2-latest")
 
-        # Load system prompt from file
-        temp_str = self._load_system_prompt(self.system_prompt_file)
-        # replace placeholder with name in system prompt
-        self.preamble = temp_str.replace("[NAME_HERE]", self.name)
+        self.preamble = self._load_preamble("systemPromptStart.txt")
 
         self.system_prompt = self.preamble + "\\n" + self.resume
 
         logger.info(f"GrokService initialized with model: {self.model}")
         logger.info(f"System prompt loaded: {self.system_prompt[:50]}..." if self.system_prompt else "No system prompt loaded")
 
-    def _load_system_prompt(self, file_path: str) -> str:
+    def _load_preamble(self, file_path: str) -> str:
+        temp_str = self._load_prompt_file(self.PROMPT_DIR + file_path)
+        # replace placeholder with name in system prompt
+        return temp_str.replace("[NAME_HERE]", self.name)
+
+
+    def _load_prompt_file(self, file_path: str) -> str:
         """
         Load the system prompt from a file.
 
@@ -103,25 +106,36 @@ class GrokService:
             # Prepare messages with history
             messages = []
 
-            # if conversation history is getting longer than n messages, tell system to wrap it up
-            if conversation_history and len(conversation_history) > 4:
+            logger.debug(f"Conversation history length: {len(conversation_history) if conversation_history is not None else 0}")
+
+            if conversation_history and len(conversation_history) >= 9:
+                new_preamble = self._load_preamble("systemPromptStartHardEnd.txt")
+                prompt = new_preamble + "\\n" + self.resume
                 messages.append({
                     "role": "system",
-                    "content": self.system_prompt + " Try to end the interview gracefully and then summarize the conversation with a 2 sentence summary.  Finally end with a quote related to this conversation and be sure to cite the author of the quote."
+                    "content": prompt
                 })
-            elif conversation_history and len(conversation_history) > 6:
+            elif conversation_history and len(conversation_history) >= 7:
+                new_preamble = self._load_preamble("systemPromptStartEnd.txt")
+                prompt = new_preamble + "\\n" + self.resume
+                # if conversation history is getting longer than n messages, tell system to wrap it up
                 messages.append({
                     "role": "system",
-                    "content": self.system_prompt + " End the interview now saying 'I'm sorry but we are out of time'.  Thank the guest and provide a quote related to this conversation and be sure to cite the author of the quote."
+                    "content": prompt
                 })
-
-
-
-            # Add system message for context
-            messages.append({
-                "role": "system",
-                "content": self.system_prompt
-            })
+            # if conversation is even number have Lex return witty thoughts
+            elif conversation_history and (len(conversation_history) == 3 or len(conversation_history) == 5 or len(conversation_history) == 7):
+                prompt = self.preamble + "\\n Please start your response with at least 3 sentences of observations about what was just said before you ask your next question. \\n" + self.resume
+                messages.append({
+                    "role": "system",
+                    "content": prompt
+                })
+            else :
+                # Add system message for context
+                messages.append({
+                    "role": "system",
+                    "content": self.system_prompt
+                })
 
             # Add conversation history if available
             if conversation_history:
