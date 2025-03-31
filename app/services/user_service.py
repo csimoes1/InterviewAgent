@@ -8,6 +8,7 @@ USERS = {
     "ljordan@gmail.com": "Leslie Jordan",
     "msimoes1325@gmail.com": "Mark Simoes",
     "heero@sprintmail.com": "Greg Simoes",
+    "kjhayden@gmail.com": "Kenneth Hayden",
     "engineering@example.com": "David Rodriguez",
     "marketing@example.com": "Jennifer Smith",
     "sales@example.com": "Christopher Lee",
