@@ -1,0 +1,101 @@
+Contact
+chrisyeeut@gmail.com
+www.linkedin.com/in/chrisyeeut
+(LinkedIn)
+Chris Yee
+Senior Director of Engineering
+Austin, Texas, United States
+Top Skills
+Prisma ORM
+TypeScript
+React.js
+Summary
+Versatile engineering executive with proven success driving growth
+& profitability for small startups and Fortune 500 companies
+Experience
+DocUnlock
+Engineering
+July 2024 - Present (10 months)
+Cisco
+Senior Director Of Engineering
+April 2022 - April 2024 (2 years 1 month)
+Austin, Texas, United States
+I Directed Platform Engineering and Data Science teams for Cisco CX Cloud.
+AI projects included security insights and enhanced customer targeting and
+onboarding. Directed cross-functional initiatives, including organizational
+optimizations, change management, and organizational hiring.
+Hatched Labs, Inc.
+Senior Director Of Engineering
+April 2020 - April 2022 (2 years 1 month)
+Austin, Texas, United States
+At Hatched Labs I led Application engineering and AI projects while reporting
+to the General manager. We grew our fully remote, globally distributed team
+from 25 to 65 over 2 years while launching a B2C e-commerce solution
+generating 500M in revenue a year.
+Khoros
+6 years 3 months
+Sr. Director of Engineering
+March 2020 - April 2020 (2 months)
+Austin, Texas, United States
+Director Of Engineering
+Page 1 of 3
+March 2019 - March 2020 (1 year 1 month)
+Austin, Texas, United States
+As a Director at Khoros I was responsible for engineering for the Khoros Care
+product line and reported to the GM for my business unit. I had a team of over
+100 engineers across 3 sites. My team continued to grow our product ARR,
+reduce costs and develop an in house boot camp for junior engineers.
+Director of Engineering
+September 2015 - March 2019 (3 years 7 months)
+I managed Teams in Austin and in Bangalore across 2 product lines. During
+this time I helped lead a DevOps transition where all of engineering joined a
+PagerDuty rotation. This led us to improve system uptime to 99.99%+
+Lithium was acquired by Vista PE
+Senior Engineering Manager
+February 2014 - September 2015 (1 year 8 months)
+At Lithium i was responsible for college hiring and growing the office in Austin.
+During my time at Lithium we grew the team from 30 to 100 engineers and
+maintained less than 5% unwanted attrition.
+Blackbaud
+Manager, Software Development
+2012 - January 2014 (2 years)
+As a Manager of Software Development at Blackbaud I was responsible for
+two projects, the online Peer to Peer fundraising system and integration
+between the Convio and Blackbaud CRMs. During my time as a manager I
+was Team captain for the Austin engineering office for college recruiting at the
+University of Texas and Rice. I personally hired 30+ college grads and interns
+for all engineering teams, not just my own. In doing this we build our brand as
+a great place to work and went from an unknown to a top choice for college
+students at UT Austin. I was also responsible for mentoring and coaching ~10
+junior developers to become professional senior developers
+Convio
+4 years
+Engineering Team Lead
+2010 - 2012 (2 years)
+Austin Texas
+As a team lead at Convio I was responsible for helping to hire and mentor new
+developers while enhancing and maintaining the TeamRaiser product. I also
+Page 2 of 3
+took the lead on campus interviews and hosting information sessions at UT
+Austin.
+Senior Software Engineer
+June 2008 - 2010 (2 years)
+Austin, Texas
+As a Senior engineer at Convio I worked primarily on the TeamRaiser line,
+the leading peer to peer fundraising solution. I worked closely with some of
+our largest customers such as The American Cancer Society and St. Jude
+Children's Hospital to help them raise money to find a cure for cancer. Project
+work entailed mostly backend Java development for email marketing, event
+management and online fundraising.
+Mortgage Cadence an Accenture Company
+Software Developer
+January 2005 - June 2008 (3 years 6 months)
+Denver, CO
+At Mortgage Cadence I worked on the Auto-Decision engine to determine the
+best loan fit for a borrower. I also made contributions to the eventing engine.
+Later in my time at Mortgage Cadence I worked very closely with the Executive
+Vice President to collaborate on large sales deals for our API framework.
+Education
+The University of Texas at Austin
+BS, Computer Science
+Page 3 of 3
