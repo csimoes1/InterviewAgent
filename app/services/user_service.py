@@ -10,6 +10,7 @@ USERS = {
     "heero@sprintmail.com": "Greg Simoes",
     "kjhayden@gmail.com": "Kenneth Hayden",
     "chrisyeeut@gmail.com": "Chris Yee",
+    "ppotrec@cisco.com": "Przemyslaw Potrec",
     "engineering@example.com": "David Rodriguez",
     "marketing@example.com": "Jennifer Smith",
     "sales@example.com": "Christopher Lee",
